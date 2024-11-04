@@ -2,22 +2,25 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 
-export default function LoginScreen() {
+export default function RegisterScreen() {
   const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.push('/(tabs)/');
+  const handleRegister = () => {
+    // You can add registration logic here
+    router.push('/(tabs)/'); // Navigate to a different screen after registration
   };
 
-  const handleRegisterLink = () => {
-    router.push('/register'); // Navigate to the register screen
+  const handleLoginLink = () => {
+    router.push('/'); // Navigate to the login screen
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Calculator</Text>
+      <Text style={styles.title}>Register</Text>
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -26,16 +29,30 @@ export default function LoginScreen() {
       />
       <TextInput
         style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+      <TextInput
+        style={styles.input}
         placeholder="Password"
         value={password}
         secureTextEntry
         onChangeText={setPassword}
       />
-      <Button title="Login" onPress={handleLogin} />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        secureTextEntry
+        onChangeText={setConfirmPassword}
+      />
+      <Button title="Register" onPress={handleRegister} />
 
-      {/* Link to the Register Screen */}
-      <TouchableOpacity onPress={handleRegisterLink}>
-        <Text style={styles.linkText}>Don't have an account? Register</Text>
+      {/* Link to the Login Screen */}
+      <TouchableOpacity onPress={handleLoginLink}>
+        <Text style={styles.linkText}>Already have an account? Log in</Text>
       </TouchableOpacity>
     </View>
   );

@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Picker, ScrollView, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TextInput, 
+  Button, 
+  StyleSheet, 
+  TouchableOpacity, 
+  Picker, 
+  ScrollView, 
+  Alert 
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
@@ -14,17 +24,20 @@ export default function CalculatorScreen() {
 
   const router = useRouter(); 
 
-
   useEffect(() => {
     const checkUserId = async () => {
-      const userId = await AsyncStorage.getItem('user_id');
-      if (!userId) {
-        router.push('/'); // Переход на главную страницу
+      try {
+        const userId = await AsyncStorage.getItem('user_id');
+        if (!userId) {
+          router.push('/'); // Переход на главную страницу
+        }
+      } catch (error) {
+        console.error('Ошибка проверки пользователя:', error);
       }
     };
 
     checkUserId();
-  }, []);
+  }, [router]);
 
   const handleCalculate = async () => {
     try {
@@ -35,8 +48,8 @@ export default function CalculatorScreen() {
       }
 
       const requestData = {
-        tax_type: parseInt(taxType),
-        operation: parseInt(operation),
+        tax_type: parseInt(taxType, 10),
+        operation: parseInt(operation, 10),
         amount: parseFloat(income),
         custom_rate: parseFloat(customRate) || 0.0,
         new: year === 'after' ? 1 : 0,
@@ -59,9 +72,20 @@ export default function CalculatorScreen() {
       const result = await response.json();
       setCalculatedTax(result.calculated_tax);
       setCustomRateUsed(result.custom_rate_used);
+      setIncome(''); // Сброс дохода
+      setCustomRate(''); // Сброс пользовательской ставки
     } catch (error) {
       Alert.alert('Ошибка', 'Не удалось подключиться к серверу');
       console.error(error);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.removeItem('user_id'); // Очистить user_id
+      router.push('/'); // Перенаправить на главную страницу
+    } catch (error) {
+      console.error('Error during logout:', error);
     }
   };
 
@@ -168,6 +192,9 @@ export default function CalculatorScreen() {
           </Text>
         </View>
       )}
+      <View style={styles.footer}>
+        <Button title="Logout" onPress={handleLogout} color="#ff6347" />
+      </View>
     </ScrollView>
   );
 }
@@ -177,6 +204,11 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#f5f5f5',
+  },
+  footer: {
+    marginTop: 'auto', // Перемещает кнопку вниз
+    paddingVertical: 10,
+    backgroundColor: '#fff', // Добавьте фон, если нужно выделить кнопку
   },
   title: {
     fontSize: 24,

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 
 const TAX_TYPES = {
   1: 'НДФЛ (доходы физ. лиц)',
@@ -15,29 +16,36 @@ export default function HistoryScreen() {
   const [historyData, setHistoryData] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    // Fetch the user ID from AsyncStorage
-    const fetchHistoryData = async () => {
-      try {
-        const userId = await AsyncStorage.getItem('user_id');
-        if (userId) {
-          // Make API request
-          const response = await fetch(`http://127.0.0.1:9011/calculations/${userId}`, {
-            method: 'GET',
-            headers: {
-              'Accept': 'application/json',
-            },
-          });
-          const data = await response.json();
-          setHistoryData(data); // Set fetched data to state
-        }
-      } catch (error) {
-        console.error('Error fetching history data:', error);
+    const checkUserId = async () => {
+      const userId = await AsyncStorage.getItem('user_id');
+      if (!userId) {
+        router.push('/'); // Перенаправление на главную страницу
+      } else {
+        fetchHistoryData(userId);
       }
     };
 
-    fetchHistoryData();
+    const fetchHistoryData = async (userId) => {
+      try {
+        const response = await fetch(`http://127.0.0.1:9011/calculations/${userId}`, {
+          method: 'GET',
+          headers: {
+            'Accept': 'application/json',
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setHistoryData(data); // Установка данных истории
+        }
+      } catch (error) {
+        console.error('Ошибка при загрузке истории:', error);
+      }
+    };
+
+    checkUserId();
   }, []);
 
   const openModal = (item) => {

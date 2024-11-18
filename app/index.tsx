@@ -1,16 +1,42 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const router = useRouter();
 
-  const handleLogin = () => {
-    router.push('/(tabs)/');
+  // Function to handle login
+  const handleLogin = async () => {
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:9011/auth', 
+        {
+          login: username,
+          password: password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        await AsyncStorage.setItem('user_id', response.data.user_id);
+        router.push('/main');
+      }
+    } catch (error) {
+      alert('Login failed. Please check your credentials.');
+      console.error(error);
+    }
   };
 
+  // Function to handle registration link
   const handleRegisterLink = () => {
     router.push('/register'); // Navigate to the register screen
   };

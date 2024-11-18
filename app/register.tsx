@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
+import axios from 'axios';
 
 export default function RegisterScreen() {
   const [username, setUsername] = useState('');
@@ -9,9 +10,36 @@ export default function RegisterScreen() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const router = useRouter();
 
-  const handleRegister = () => {
-    // You can add registration logic here
-    router.push('/(tabs)/'); // Navigate to a different screen after registration
+  const handleRegister = async () => {
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match!');
+      return;
+    }
+
+    try {
+      const response = await axios.post(
+        'http://127.0.0.1:9011/register',
+        {
+          email: email,
+          login: username,
+          password: password,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        }
+      );
+
+      if (response.status === 201 || response.status === 200) {
+        Alert.alert('Success', 'Registration successful! Please log in.');
+        router.push('/'); // Redirect to login screen
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Registration failed. Please try again.');
+      console.error(error.response?.data || error.message);
+    }
   };
 
   const handleLoginLink = () => {

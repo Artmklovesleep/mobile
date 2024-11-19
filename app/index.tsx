@@ -13,7 +13,7 @@ export default function LoginScreen() {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        'http://127.0.0.1:9011/auth', 
+        'http://45.153.189.82:8003/auth', 
         {
           login: username,
           password: password,
@@ -27,7 +27,7 @@ export default function LoginScreen() {
       );
   
       if (response.status === 200) {
-        await AsyncStorage.setItem('user_id', response.data.user_id);
+        await AsyncStorage.setItem('user_id', response.data.user_id.toString());
         router.push('/main');
       }
     } catch (error) {

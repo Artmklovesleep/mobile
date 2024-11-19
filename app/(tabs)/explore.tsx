@@ -30,7 +30,7 @@ export default function HistoryScreen() {
 
     const fetchHistoryData = async (userId) => {
       try {
-        const response = await fetch(`http://127.0.0.1:9011/calculations/${userId}`, {
+        const response = await fetch(`http://45.153.189.82:8003/calculations/${userId}`, {
           method: 'GET',
           headers: {
             'Accept': 'application/json',

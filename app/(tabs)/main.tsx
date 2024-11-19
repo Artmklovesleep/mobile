@@ -6,10 +6,11 @@ import {
   Button, 
   StyleSheet, 
   TouchableOpacity, 
-  Picker, 
+  // Picker,
   ScrollView, 
   Alert 
 } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 
@@ -55,7 +56,7 @@ export default function CalculatorScreen() {
         new: year === 'after' ? 1 : 0,
       };
 
-      const response = await fetch(`http://127.0.0.1:9011/raschet/${userId}`, {
+      const response = await fetch(`http://45.153.189.82:8003/raschet/${userId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
